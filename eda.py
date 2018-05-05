@@ -71,3 +71,23 @@ df2=df.convert_objects(convert_numeric=True)
 
 df2.to_pickle('df2.pck')
 df.to_pickle('df.pck')
+
+#Creating a story around the architects of Chicago
+dfg=df2.groupby(['Architect'])
+dfg['city_locode'].count()
+
+
+dfArchitect=df2[['floors_above', 'functions', 'height_architecture',\
+       'latitude', 'longitude', 'name',\
+       'start', 'status', 'structural_material',\
+       'Architect']]
+dfArchitect['cnt']=dfArchitect['Architect'].str.count(';')
+dup=dfArchitect[dfArchitect['cnt']>0]
+dup['Architect'].str.split(';')
+Darch=pd.DataFrame(columns=dfArchitect.columns)
+for row in dup['Architect']:
+    for val in row.split(';'):
+        
+        
+dup['Architect']=='DeStefano + Partners;Harry Weese Associates'
+        
