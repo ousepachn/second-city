@@ -13,8 +13,11 @@ import os
 import re
 from time import sleep
 import pickle
+from sklearn import linear_model
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
 
-os.chdir('C:\\Users\\JosephChacko\\Documents\\Personal\\chicago')
+os.chdir('C:\\Users\\ousep\\Documents\\DataVisualizationBlog\\second-city')
 
 http=urllib3.PoolManager()
 
@@ -66,8 +69,36 @@ for val in details:
 
 
 df['Architect']=Architects
+
+
     
 df2=df.convert_objects(convert_numeric=True)
 
 df2.to_pickle('df2.pck')
 df.to_pickle('df.pck')
+
+df2=pd.read_pickle('df2.pck')
+
+details=df2['details']
+
+df2['time']=df2['completed']-df2['start']
+
+sum(df2['time'].isnull())
+
+df2.plot.scatter('floors_above','time')
+
+
+################
+#modelling
+df2.columns
+df2['c_1900']=df2['completed']-1900
+X=df2[['floors_above','c_1900']]
+y=df2['time']*12
+
+X=sm.add_constant(X)
+
+est=sm.OLS(y,X,missing='drop').fit()
+
+est.summary()
+
+plt.scatter(X['c_1900'],X['floors_above'])
