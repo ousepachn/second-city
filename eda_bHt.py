@@ -76,6 +76,7 @@ df2=df.convert_objects(convert_numeric=True)
 
 df2.to_pickle('df2.pck')
 df.to_pickle('df.pck')
+<<<<<<< HEAD:eda_bHt.py
 
 df2=pd.read_pickle('df2.pck')
 
@@ -102,3 +103,26 @@ est=sm.OLS(y,X,missing='drop').fit()
 est.summary()
 
 plt.scatter(X['c_1900'],X['floors_above'])
+||||||| merged common ancestors
+=======
+
+#Creating a story around the architects of Chicago
+dfg=df2.groupby(['Architect'])
+dfg['city_locode'].count()
+
+
+dfArchitect=df2[['floors_above', 'functions', 'height_architecture',\
+       'latitude', 'longitude', 'name',\
+       'start', 'status', 'structural_material',\
+       'Architect']]
+dfArchitect['cnt']=dfArchitect['Architect'].str.count(';')
+dup=dfArchitect[dfArchitect['cnt']>0]
+dup['Architect'].str.split(';')
+Darch=pd.DataFrame(columns=dfArchitect.columns)
+for row in dup['Architect']:
+    for val in row.split(';'):
+        
+        
+dup['Architect']=='DeStefano + Partners;Harry Weese Associates'
+        
+>>>>>>> origin/master:eda.py
