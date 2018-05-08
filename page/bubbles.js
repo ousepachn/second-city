@@ -1,13 +1,13 @@
 (function(){
-	var width=850,
-	height = 850;
+	var width=1250,
+	height = 670;
 
 	var svg = d3.select("#chart")
 	.append("svg")
 	.attr("height",height)
 	.attr("width",width)
 	.append("g")
-	.attr("transform","translate(" + height/2 + "," + width/2 + ")")
+	.attr("transform","translate(" + width/2 + "," + height/2 + ")")
 
 
 	d3.queue()
@@ -20,16 +20,28 @@
 
 	function ready(error,datapoints) {
 
+		var forcexSplit=d3.forceX(
+			function (d) {
+				if(d.flag==='gt1980'){
+					return width/4;
+				}
+				else return -1 * width/4;
+			}).strength(0.05)
+		var forceySplit=d3.forceY().strength(0.025)
+
+		var forcexCombine=d3.forceX().strength(0.03)
+		var forceyCombine=d3.forceY().strength(0.03)
+	
 		var simulation =d3.forceSimulation()
-		.force("x",d3.forceX().strength(0.005))
-		.force("y",d3.forceY().strength(0.005))
+		.force("x",forcexCombine)
+		.force("y",forceyCombine)
 		.force("collide",d3.forceCollide(function(d){
 			return radiusScale(d.buildings)+1;
 		}))
 
 		var radiusScale = d3.scaleSqrt()
 			.domain([0,d3.max(datapoints,function(d){return d.buildings;})])
-			.range([10,35])
+			.range([10,32])
 		
 		var circles = svg.selectAll(".architect")
 		.data(datapoints)
@@ -66,7 +78,29 @@
 			.style("opacity",0);
 		})
 
+		d3.select("#split").on('click', function(){
+			console.log("split stuff")
+			simulation
+				.force("x",forcexSplit)
+			 	.force("y",forceySplit)
+				.alphaTarget(0.9)
+				.restart()
+			setTimeout(function(){simulation.alphaTarget(0);},1000);
+			
+		})
+
+		d3.select("#combine").on('click', function(){
+			console.log("combine stuff")
+			simulation
+				.force("x",forcexCombine)
+				.force("y",forceyCombine)
+				.alphaTarget(0.9)
+				.restart()
+			setTimeout(function(){simulation.alphaTarget(0);},1000);
+		
+		})
 		simulation.nodes(datapoints)
+			.alphaTarget(0)
 			.on('tick',ticked) 
 
 
