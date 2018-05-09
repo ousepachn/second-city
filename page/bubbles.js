@@ -10,6 +10,7 @@
   	.attr("preserveAspectRatio", "xMinYMin meet")
 	.append("g")
 	.attr("transform","translate(" + width/2 + "," + height/2 + ")")
+	
 
 	d3.selection.prototype.moveToBack = function() {  
         return this.each(function() { 
@@ -114,6 +115,10 @@
 			.domain([0,d3.max(datapoints,function(d){return d.buildings;})])
 			.range([10,32])
 		
+		d3.select("#chart").on("click",function(){
+			console.log("hello box")
+		})
+
 		var circles = svg.selectAll(".architect")
 		.data(datapoints)
 		.enter().append("circle")
@@ -126,8 +131,10 @@
 
 			return colorScale((d.year+1)*2 );
 		})
+
 		.on("click",function(d){
-			console.log(d);}
+			console.log(d);
+			d3.event.stopPropagation();}
 			)
 		.on("mouseover",function(d){
 			d3.select(this).transition()
@@ -170,7 +177,7 @@
 				}
 			)
 				.style("top",function(){
-					console.log(flg_split)
+					// console.log(flg_split)
 					if (flg_split===1) {
 						// console.log(d.f_max);
 						if (d.f_max>75){
