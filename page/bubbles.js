@@ -69,7 +69,29 @@
 					+"<abc style=font-size:70%;><br/>Click on a bubble to view Architect's work</abc>"
 	]
 
+
+
 	function ready(error,datapoints) {
+
+	function dragstarted() {
+		  if (!d3.event.active) simulation.alphaTarget(1).restart();
+		  d3.event.subject.fx = d3.event.subject.x;
+		  d3.event.subject.fy = d3.event.subject.y;
+		}
+		
+	function dragged() {
+		  d3.event.subject.fx = d3.event.x;
+		  d3.event.subject.fy = d3.event.y;
+		}
+		
+	function dragended() {
+		  if (!d3.event.active) simulation.alphaTarget(0);
+		  d3.event.subject.fx = null;
+		  d3.event.subject.fy = null;
+		}
+	function dragsubject() {
+    return simulation.find(d3.event.x, d3.event.y);
+  		}		
 
 		var flg_split=0;
 		var pg_title=svg.append("text")
@@ -211,8 +233,17 @@
 			e_box.transition()
 			.duration(500)
 			.style("opacity",0);
+			})
 
-		})
+		.call(
+			 d3.drag()
+        				
+        				.subject(dragsubject)
+        				.on("start", dragstarted)
+        				.on("drag", dragged)
+        				.on("end", dragended)
+        	
+    		);
 
 
 		d3.select("#split").on('click', function(){
