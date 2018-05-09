@@ -1,11 +1,13 @@
 (function(){
 	var width=1250,
-	height = 1250;
+	height = 1300;
 
 	var svg = d3.select("#chart")
 	.append("svg")
-	.attr("height",height)
-	.attr("width",width)
+	// .attr("height",height)
+	// .attr("width",width)
+	.attr("viewBox", "0 0 "+width+" "+height)
+  	.attr("preserveAspectRatio", "xMinYMin meet")
 	.append("g")
 	.attr("transform","translate(" + width/2 + "," + height/2 + ")")
 
@@ -18,6 +20,7 @@
         });
     };
 
+
 	d3.queue()
 	.defer(d3.csv,"architect.csv")
 	.await(ready)
@@ -26,9 +29,56 @@
 		.attr("class","tooltip")
 		.style("opacity",0)
 
-	var lines=[ ["25 Floors",height *2/5],["50 Floors",height *1/7],["75 Floors", - height *1/7],["100 Floors", - height *2/5]]
+	var e_box = d3.select("body").append("div")
+		.attr("class","e_box")
+		.style("opacity",0)
+
+	var lines=[ ["25 Floors",height *2/5],["50 Floors",height *1/7],["75 Floors", - height *1/7],["Skywards", - height *2/5]]
+	var gyan=["<strong>Architect of Chicago</strong></br>" 
+					+"Bubbles represent architects who've</br>" 
+					+"built the Chicago Skyline.  From 1990 to 2023,<br/>"
+					+"these 100+ architects have designed over<br/>"
+					+"500 buildings for the city.<br/>"
+					+"<i>Click on a bubble to view Architect's work</i>",
+				"<strong>The Impossible Builders</strong></br>" 
+					+"Designed to be the headliners</br>" 
+					+"of the Chicago Skyline.  <br/>"
+					+"Sample buildings include the <i>Willis Tower, Aqua</i><br/>"
+					+"and <i>Tribune East, Vista Towers</i> (Upcoming)."
+					+"<abc style=font-size:70%;><br/>Click on a bubble to view Architect's work</abc>",
+				"<strong>The Tall and Beautiful</strong></br>" 
+					+"Architectural marvels so complex</br>" 
+					+"the engineeering is almost magic.<br/>"
+					+"Sample buildings include <i>150 North Riverside</i><br/>"
+					+"<i>Marina City</i> and <i>300 North LaSalle</i>."
+					+"<abc style=font-size:70%;><br/>Click on a bubble to view Architect's work</abc>",
+				"<strong>Monuments in Stone</strong></br>" 
+					+"Each building a piece of history,</br>" 
+					+"pushing the edge of engineering in<br/>"
+					+"respective times.<br/>"
+					+"Sample buildings include the <i>Wrigley building</i><br/>"
+					+"and the <i>Carbide & Carbon</i> building."
+					+"<abc style=font-size:70%;><br/>Click on a bubble to view Architect's work</abc>",
+				"<strong>Everyday masterpieces</strong></br>" 
+					+"Structures not known for their</br>" 
+					+"height, but each cruicial to <br/>"
+					+"the history of the city.<br/>"
+					+"Sample buildings include the <i>University Club</i><br/>"
+					+"and the <i>U.S Post Office</i> building."
+					+"<abc style=font-size:70%;><br/>Click on a bubble to view Architect's work</abc>"
+	]
 
 	function ready(error,datapoints) {
+
+		var flg_split=0;
+		var pg_title=svg.append("text")
+			.attr("class","pg_title")
+			.attr("y",-1*height/2 +50)
+			.attr("text-anchor","middle")
+			.text("Architects of Second City")
+
+
+    
 
 		var forceySplit=d3.forceY(
 			function (d) {
@@ -89,6 +139,56 @@
 			div.html("<strong style=font-size:150%;>" + d.architect +"</strong><br/> Buildings Designed: " +d.buildings+"<br/> Last Building Yr: " +d.max_c)
 				.style("left",(d3.event.pageX)+"px")
 				.style("top",(d3.event.pageY )+"px");
+
+			e_box.transition()
+				.duration(200)
+				.style("opacity",0.9);
+			e_box.html(function()
+				{
+				if(flg_split===0)
+					{
+					return gyan[0];
+					}
+				else 
+					{
+					if (d.f_max>75)
+						{
+							return gyan[1];
+						}
+						else if (d.f_max>50)
+						{
+							return gyan[2];
+						}
+						else if (d.f_max>25)
+						{
+							return gyan[3];
+						}
+						
+						else return gyan[4];
+					}
+
+				}
+			)
+				.style("top",function(){
+					console.log(flg_split)
+					if (flg_split===1) {
+						// console.log(d.f_max);
+						if (d.f_max>75){
+								return (40 )+"px";
+							}
+						else if (d.f_max>50){
+								return (40 + height*2/7)+"px";
+							}
+						else if (d.f_max>25){
+								return (55 + height*4/7)+"px";
+							}
+						
+						else return (55 + height*6/7)+"px";
+						}
+					else return height/2 +"px"
+
+						})
+				.style("right","0");
 				})
 		.on("mousemove", function() {
           return div.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
@@ -101,11 +201,17 @@
 			div.transition()
 			.duration(500)
 			.style("opacity",0);
+			e_box.transition()
+			.duration(500)
+			.style("opacity",0);
+
 		})
 
 
 		d3.select("#split").on('click', function(){
 			console.log("split stuff")
+			flg_split=1;
+			console.log(flg_split)
 			simulation
 				.force("x",forcexSplit)
 			 	.force("y",forceySplit)
@@ -121,8 +227,6 @@
 				.attr("x",-1*width/2.5)
 				.attr("y",function(d){return d[1]-5;})
 				.text(function(d){return d[0];})
-				.attr("font-family", "sans-serif")
-	            .attr("font-size", "100")
 		        .attr("fill", "silver");
 
 			var ln = svg.selectAll(".lines")
@@ -139,6 +243,7 @@
 		})
 
 		d3.select("#combine").on('click', function(){
+			flg_split=0;
 			console.log("combine stuff")
 			svg.selectAll(".lines").remove()
 			svg

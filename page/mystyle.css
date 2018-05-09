@@ -15,8 +15,13 @@ p,text {
     font-size: 0.875em;
 }
 
-.ht_lbl{
+.pg_title{
 	font-size:3em;
+}
+
+.ht_lbl{
+	font-size:2em;
+	letter-spacing: -3px;
 }
 		svg {
 			background: #f1f1f1;
@@ -27,6 +32,17 @@ p,text {
 		    text-align: left;			
 			padding: 10px;					
 		    background: lightsteelblue;	
+		    border: 0px;		
+		    border-radius: 8px;			
+		    pointer-events: none;			
+		}
+		div.e_box {	
+		    position: absolute;			
+		    text-align: left;
+		    float:right;			
+			padding: 10px;
+			padding-right: 20px;					
+		    background: none;	
 		    border: 0px;		
 		    border-radius: 8px;			
 		    pointer-events: none;			
